@@ -8,7 +8,7 @@ class ParametersError(Exception):
 
 class MyBarchartCreator(object):
 
-    def __init__(self, data, N=10, is_dict=True, is_list=False):
+    def __init__(self, data, title="", N=10, is_dict=True, is_list=False):
 
         if is_dict == is_list:
             raise  ParametersError('wrong setting is_dict must be != from is_list')
@@ -16,6 +16,7 @@ class MyBarchartCreator(object):
         if is_dict:
             self.data_type= 1
 
+        self.title = title
         self.n_columns= len(data.keys())
         self.N= N
         if is_dict:
@@ -26,6 +27,7 @@ class MyBarchartCreator(object):
                 counter += 1
                 self.data_to_plot[k]= tuple(data[k])
         self.has_labels = False
+        self.has_legend = False
 
     def bind_labels(self, values, is_dict=True, is_list=False):
         if is_dict == is_list:
@@ -37,10 +39,21 @@ class MyBarchartCreator(object):
             self.label_values= values
             self.has_labels =True
 
-    def plot(self, limit = None):
+    def bind_legend(self, tuple_string):
+        assert(isinstance(tuple_string, tuple))
+        self.legend = tuple_string
+        self.has_legend = True
 
-        ind = np.arange(self.N)  # the x locations for the groups
-        width = 0.35       # the width of the bars
+    def plot(self, limit = None, legends=None):
+        """
+
+        :param limit: to overcome the limit of a certain number
+        :param legends: customize the legend
+        :return: None
+        """
+
+        ind = np.arange(self.N) * 2 # the x locations for the groups
+        width = 0.6 # the width of the bars
         fig, ax = plt.subplots()
 
         rects_list = list()
@@ -52,19 +65,27 @@ class MyBarchartCreator(object):
         cntr = 0
         for (k,i) in self.data_to_plot.iteritems():
             rects_list.append(ax.bar(last_pos, i, width, color=colours[cntr]))
-            last_pos = ind+width
+            last_pos = ind+(width * (cntr+1))
             cntr = (cntr+1)%tot_col
 
         # add some text for labels, title and axes ticks
-        ax.set_ylabel('Time')
+        ax.set_ylabel('Time (s)')
+
         if limit is not None:
-            ax.set_ylim(0, limit)
-        ax.set_title('Used time per run to spread the configuration')
-        ax.set_xticks(ind + width)
+            act_max = -1000
+            for (k,i) in self.data_to_plot.iteritems():
+                if act_max < max(i):
+                    act_max = max(i)
+
+            ax.set_ylim(0, act_max+limit)
+
+        ax.set_title(self.title)
+        ax.set_xticks(ind + (width))
         ax.set_xlabel('# run')
         ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
 
-        ax.legend(tuple(rects_list), ('AP stress (throttling 400us)', 'MP stress (throttling 200us/800us)'))
+        if self.has_legend:
+            ax.legend(tuple(rects_list), self.legend)
 
         if self.has_labels is True:
 
