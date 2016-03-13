@@ -1,5 +1,6 @@
 import pylab as plt
 import numpy as np
+import types
 
 class ParametersError(Exception):
         def __init__(self, message):
@@ -8,52 +9,75 @@ class ParametersError(Exception):
 
 class MyBarchartCreator(object):
 
-    def __init__(self, data, title="", N=10, is_dict=True, is_list=False):
+    def __init__(self, data, title="", N=10):
+        """
 
-        if is_dict == is_list:
-            raise  ParametersError('wrong setting is_dict must be != from is_list')
-
-        if is_dict:
-            self.data_type= 1
-
+        :param data: data to be passed (can be a dict or a list)
+        :param title: allow to specify the title of the barchar plotting
+        :param N: allow to specify the number of rows expected
+        :return:
+        """
         self.title = title
-        self.n_columns= len(data.keys())
         self.N= N
-        if is_dict:
-            assert isinstance(data, dict)
+        self.has_labels = False
+        self.has_legend = False
+
+        if isinstance(data, dict): #(type(data) is types.DictType)
+            self.type = "dict"
+            self.n_columns= len(data.keys())
             self.data_to_plot = dict()
             counter = 0
             for k in data.keys():
                 counter += 1
                 self.data_to_plot[k]= tuple(data[k])
-        self.has_labels = False
-        self.has_legend = False
+        elif isinstance(data, list):
+            #TODO laaater
+            pass
+
 
     def bind_labels(self, values, is_dict=True, is_list=False):
-        if is_dict == is_list:
-            raise  ParametersError('wrong setting is_dict must be != from is_list')
-        if is_dict:
-            assert isinstance(values, dict)
+        """
+        Allows to bind a label to put over each bar for each value, has to be the same format as the data input
+        of the constructor
+
+        :param values: list() or dict() in according with the specified data input in the constructor
+        :param is_dict: specifies if is a dict
+        :param is_list: specifies if is a list
+        :return:
+        """
+
+        if isinstance(values, dict):
             if len(values[0]) != self.N:
                 raise ParametersError('values to label don\'t match with data')
+            if self.type != "dict":
+                raise ParametersError('different types among label and data')
             self.label_values= values
             self.has_labels =True
+
+        elif isinstance(values, dict):
+            if len(values) != self.N:
+                raise ParametersError('values to label don\'t match with data')
+            if self.type != "list":
+                raise ParametersError('different types among label and data')
+            self.label_values= values
+            self.has_labels =True
+
 
     def bind_legend(self, tuple_string):
         assert(isinstance(tuple_string, tuple))
         self.legend = tuple_string
         self.has_legend = True
 
-    def plot(self, limit = None, legends=None):
+    def plot(self, limit = None):
         """
+        Allows to plot the configured data
 
         :param limit: to overcome the limit of a certain number
-        :param legends: customize the legend
         :return: None
         """
 
-        ind = np.arange(self.N) * 2 # the x locations for the groups
-        width = 0.6 # the width of the bars
+        ind = np.arange(self.N)  # the x locations for the groups
+        width = 0.35 # the width of the bars
         fig, ax = plt.subplots()
 
         rects_list = list()

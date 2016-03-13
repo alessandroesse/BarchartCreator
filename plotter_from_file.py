@@ -17,7 +17,7 @@ mb = MyBarchartCreator(columns, title='Time required to spread the configuration
 
 #bind the label
 mb.bind_labels(vals)
-mb.bind_legend(('AP stress (throttling 400us)', 'MP stress (throttling 200us/800us)'))
+#mb.bind_legend(('AP stress (throttling 400us)', 'MP stress (throttling 200us/800us)'))
 
 #elaborates and show
 mb.plot(limit=100)
