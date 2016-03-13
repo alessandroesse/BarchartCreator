@@ -16,6 +16,7 @@ class MyBarchartCreator(object):
         if is_dict:
             self.data_type= 1
 
+        self.n_columns= len(data.keys())
         self.N= N
         if is_dict:
             assert isinstance(data, dict)
@@ -26,7 +27,7 @@ class MyBarchartCreator(object):
                 self.data_to_plot[k]= tuple(data[k])
         self.has_labels = False
 
-    def values_to_label(self, values, is_dict=True, is_list=False):
+    def bind_labels(self, values, is_dict=True, is_list=False):
         if is_dict == is_list:
             raise  ParametersError('wrong setting is_dict must be != from is_list')
         if is_dict:
@@ -42,8 +43,17 @@ class MyBarchartCreator(object):
         width = 0.35       # the width of the bars
         fig, ax = plt.subplots()
 
-        rects1 = ax.bar(ind, self.data_to_plot[0], width, color='r')
-        rects2 = ax.bar(ind + width, self.data_to_plot[1], width, color='y')
+        rects_list = list()
+
+        colours = ['b', 'r', 'c', 'm', 'y', 'b']
+        tot_col = len(colours)
+
+        last_pos = ind
+        cntr = 0
+        for (k,i) in self.data_to_plot.iteritems():
+            rects_list.append(ax.bar(last_pos, i, width, color=colours[cntr]))
+            last_pos = ind+width
+            cntr = (cntr+1)%tot_col
 
         # add some text for labels, title and axes ticks
         ax.set_ylabel('Time')
@@ -54,7 +64,7 @@ class MyBarchartCreator(object):
         ax.set_xlabel('# run')
         ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
 
-        ax.legend((rects1[0], rects2[0]), ('AP stress (throttling 400us)', 'MP stress (throttling 200us/500us)'))
+        ax.legend(tuple(rects_list), ('AP stress (throttling 400us)', 'MP stress (throttling 200us/800us)'))
 
         if self.has_labels is True:
 
@@ -68,8 +78,6 @@ class MyBarchartCreator(object):
                             ha='center', va='bottom')
                     counter += 1
 
-
-            autolabel(rects1,self.label_values[0])
-            autolabel(rects2, self.label_values[1])
-
+            for i in range(0, self.n_columns):
+                autolabel(rects_list[i], self.label_values[i])
         plt.show()

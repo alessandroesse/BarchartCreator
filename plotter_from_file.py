@@ -2,16 +2,20 @@ from column_parser import ParseFile
 from plotter_class import MyBarchartCreator
 
 parser = ParseFile('t_400_700.csv')
+
+# the columns are returned as a dictionary {0: [values]; 1: [values]}
 columns = parser.parse()
 
-
-n_attempt =list()
-for i in range(0, len(columns[0])):
-    n_attempt.append((i+1))
-
+#values to bind as label for each bar
 vals=dict()
-vals[0]= [1,2,3,4,5,6,7,8,9,10]
-vals[1]=[100,2,3,4,5,6,7,8,9,10]
+vals[0]= [3,0,0,0,0,0,0,1,2,0]
+vals[1]=[1,0,2,0,1,0,0,1,1,4]
+
+#instantiate
 mb= MyBarchartCreator(columns)
-mb.values_to_label(vals)
+
+#bind the label
+mb.bind_labels(vals)
+
+#elaborates and show
 mb.plot(limit=550)
