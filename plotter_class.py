@@ -35,6 +35,7 @@ class MyBarchartCreator(object):
 
         # add some text for labels, title and axes ticks
         ax.set_ylabel('Time')
+        ax.set_ylim(0, 400)
         ax.set_title('Used time per run to spread the configuration')
         ax.set_xticks(ind + width)
         ax.set_xlabel('# run')
