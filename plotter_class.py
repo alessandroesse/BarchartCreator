@@ -76,7 +76,9 @@ class MyBarchartCreator(object):
         :return: None
         """
 
-        ind = np.arange(self.N)  # the x locations for the groups
+        ind = np.arange(self.N) # * self.n_columns-1 # the x locations for the groups
+        shift= np.ones(self.N) * self.n_columns-1
+        ind = ind * shift
         width = 0.35 # the width of the bars
         fig, ax = plt.subplots()
 
