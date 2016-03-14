@@ -6,8 +6,8 @@ parser = ParseFile('t_400_700.csv')
 # the columns are returned as a dictionary {0: [values]; 1: [values]}
 columns = parser.parse()
 #columns = dict()
-columns[2] = [100,100,100,100,100,100,100,100,100,100]
-columns[3] = [100,100,100,100,100,100,100,100,100,100]
+#columns[2] = [100,100,100,100,100,100,100,100,100,100]
+#columns[3] = [100,100,100,100,100,100,100,100,100,100]
 
 #values to bind as label for each bar
 vals=dict()
